@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=yourStrong(!)Password
+    ports:
+      - "1433:1433"
+    volumes:
+      - M:/SQL/data:/var/opt/mssql/data
+      - M:/SQL/log:/var/opt/mssql/log
+      - M:/SQL/secrets:/var/opt/mssql/secrets
+    networks:
+      - mp-network
+    restart: always
+    
+  frontend:
+    build:
+      context: ./MusicPartyFE  
+      dockerfile: Dockerfile
+    container_name: mpAngular
+    ports:
+      - "8080:4200"
+    networks:
+      - mp-network
+
+  backend:
+    build: 
+      context: .
+      dockerfile: MusicPartyBE/API/Dockerfile 
+    container_name: mpApi
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+    networks:
+      - mp-network
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=bd_db;User Id=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+    restart: always
+
+networks:
+  mp-network:
+    driver: bridge
