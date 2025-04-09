@@ -1,4 +1,4 @@
-# gestion-parcours
+# music-party
 ## FR
 Une petite application web créée avec ASP.NET Core et Angular permettant de gérer des playlists de musiques et de voter pour des musiques.
 
